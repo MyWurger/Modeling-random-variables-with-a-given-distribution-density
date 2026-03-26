@@ -264,7 +264,7 @@ KolmogorovResult EvaluateKolmogorov(const std::vector<double>& sortedSamples, do
 }
 } // namespace
 
-double TVariantDistribution::Density(double x) noexcept
+double TVariantDistribution::Density(double x)
 {
     if (x < SupportMin() || x > SupportMax())
     {
@@ -274,7 +274,7 @@ double TVariantDistribution::Density(double x) noexcept
     return 2.0 * x;
 }
 
-double TVariantDistribution::Distribution(double x) noexcept
+double TVariantDistribution::Distribution(double x)
 {
     if (x <= SupportMin())
     {
@@ -289,7 +289,7 @@ double TVariantDistribution::Distribution(double x) noexcept
     return x * x;
 }
 
-double TVariantDistribution::Quantile(double probability) noexcept
+double TVariantDistribution::Quantile(double probability)
 {
     if (probability <= 0.0)
     {

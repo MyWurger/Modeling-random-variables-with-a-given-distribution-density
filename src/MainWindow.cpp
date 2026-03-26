@@ -707,10 +707,10 @@ void MainWindow::BuildUi()
 
     addTheoryRow(0, "Плотность", "f(x)=2x, 0≤x≤1");
     addTheoryRow(1, "Функция распределения", "F(x)=x<sup>2</sup>, 0≤x≤1", true);
-    addTheoryRow(2, "Математическое ожидание", "2/3");
-    addTheoryRow(3, "Дисперсия", "1/18");
-    addTheoryRow(4, "Медиана", "1/√2");
-    addTheoryRow(5, "Мода", "1");
+    addTheoryRow(2, "Математическое ожидание", "2/3 ≈ 0.6667");
+    addTheoryRow(3, "Дисперсия", "1/18 ≈ 0.0556");
+    addTheoryRow(4, "Медиана", "1/√2 ≈ 0.7071");
+    addTheoryRow(5, "Мода", "1.0000");
     addTheoryRow(6,
                  "Для метода исключения",
                  "a=0, b=1, M=2, критерий принятия z&lt;y",
@@ -768,11 +768,12 @@ void MainWindow::BuildUi()
     addSummaryRow(0, 0, "Размер выборки", sampleCountValue_);
     addSummaryRow(0, 1, "Среднее", meanValue_);
     addSummaryRow(1, 0, "Дисперсия", varianceValue_);
-    addSummaryRow(1, 1, "D<sub>n</sub>", dnValue_);
-    addSummaryRow(2, 0, "K<sub>n</sub>", knValue_);
-    addSummaryRow(2, 1, "K<sub>1-α</sub>", criticalValue_);
-    addSummaryRow(3, 0, "Гипотеза H<sub>0</sub>", hypothesisValue_);
-    addSummaryRow(3, 1, "Доля принятия", acceptanceValue_);
+    addSummaryRow(1, 1, "Медиана", medianValue_);
+    addSummaryRow(2, 0, "D<sub>n</sub>", dnValue_);
+    addSummaryRow(2, 1, "K<sub>n</sub>", knValue_);
+    addSummaryRow(3, 0, "K<sub>1-α</sub>", criticalValue_);
+    addSummaryRow(3, 1, "Гипотеза H<sub>0</sub>", hypothesisValue_);
+    addSummaryRow(4, 0, "Доля принятия", acceptanceValue_);
 
     resultsTabs_ = new QTabWidget(resultsCard);
     resultsTabs_->setObjectName("resultsTabs");
@@ -1224,6 +1225,7 @@ void MainWindow::ResetOutputs()
     sampleCountValue_->setText("—");
     meanValue_->setText("—");
     varianceValue_->setText("—");
+    medianValue_->setText("—");
     dnValue_->setText("—");
     knValue_->setText("—");
     criticalValue_->setText("—");
@@ -1387,6 +1389,7 @@ void MainWindow::UpdateSummary(const SamplingResult& result)
     sampleCountValue_->setText(QString::number(result.samples.size()));
     meanValue_->setText(FormatNumber(result.empiricalStatistics.mean));
     varianceValue_->setText(FormatNumber(result.empiricalStatistics.variance));
+    medianValue_->setText(FormatNumber(result.empiricalStatistics.median));
     dnValue_->setText(FormatNumber(result.kolmogorov.dn));
     knValue_->setText(FormatNumber(result.kolmogorov.kn));
     criticalValue_->setText(FormatNumber(result.kolmogorov.criticalValue));

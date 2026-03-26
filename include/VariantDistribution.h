@@ -1,48 +1,86 @@
+// ============================================================================
+// ФАЙЛ VARIANTDISTRIBUTION.H - ОПИСАНИЕ ТЕОРЕТИЧЕСКОГО РАСПРЕДЕЛЕНИЯ ВАРИАНТА
+// ============================================================================
+// Назначение файла:
+// 1) задать теоретическую плотность распределения для варианта LAB_1;
+// 2) предоставить функцию распределения и квантиль;
+// 3) хранить точные теоретические характеристики, используемые в GUI и
+//    при статистической проверке.
+//
+// В данном варианте рассматривается распределение:
+// f(x) = 2x на отрезке [0, 1] и 0 вне этого отрезка.
+// ============================================================================
+
+// Защита от повторного включения заголовочного файла.
 #pragma once
 
+// ----------------------------------------------------------------------------
+// КЛАСС TVariantDistribution - ТЕОРЕТИЧЕСКОЕ РАСПРЕДЕЛЕНИЕ ВАРИАНТА
+// ----------------------------------------------------------------------------
+// Класс содержит только статические методы, потому что распределение
+// полностью задано и не требует хранения состояния объекта.
+//
+// Что означает static в данном контексте:
+// - метод принадлежит самому классу, а не конкретному объекту;
+// - вызывать такой метод можно без создания экземпляра класса;
+//
+// Иначе говоря, запись вида TVariantDistribution::Density(x) означает:
+// "возьми формулу из класса распределения и вычисли значение в точке x".
+// ----------------------------------------------------------------------------
 class TVariantDistribution
 {
 public:
-    static double Density(double x) noexcept;
-    static double Distribution(double x) noexcept;
-    static double Quantile(double probability) noexcept;
+    // Возвращает значение плотности f(x).
+    static double Density(double x);
+    // Возвращает значение функции распределения F(x).
+    static double Distribution(double x);
+    // Возвращает квантиль F^(-1)(p).
+    static double Quantile(double probability);
 
-    static constexpr double SupportMin() noexcept
+    // Возвращает левую границу носителя распределения.
+    static double SupportMin()
     {
         return 0.0;
     }
 
-    static constexpr double SupportMax() noexcept
+    // Возвращает правую границу носителя распределения.
+    static double SupportMax()
     {
         return 1.0;
     }
 
-    static constexpr double MaxDensity() noexcept
+    // Возвращает максимум плотности на носителе.
+    static double MaxDensity()
     {
         return 2.0;
     }
 
-    static constexpr double Mean() noexcept
+    // Возвращает теоретическое математическое ожидание.
+    static double Mean()
     {
         return 2.0 / 3.0;
     }
 
-    static constexpr double Variance() noexcept
+    // Возвращает теоретическую дисперсию.
+    static double Variance()
     {
         return 1.0 / 18.0;
     }
 
-    static constexpr double StandardDeviation() noexcept
+    // Возвращает теоретическое среднеквадратическое отклонение.
+    static double StandardDeviation()
     {
         return 0.23570226039551584;
     }
 
-    static constexpr double Median() noexcept
+    // Возвращает теоретическую медиану.
+    static double Median()
     {
         return 0.7071067811865476;
     }
 
-    static constexpr double Mode() noexcept
+    // Возвращает теоретическую моду.
+    static double Mode()
     {
         return 1.0;
     }
