@@ -1,0 +1,14 @@
+{
+    "version": 8,
+    "configurePresets": [
+        {
+            "name": "default-debug",
+            "displayName": "Default Debug",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CXX_COMPILER": "/usr/bin/clang++"
+            }
+        }
+    ]
+}

@@ -1,0 +1,11 @@
+build/
+cmake-build-*/
+
+.DS_Store
+
+.vscode/
+
+*.app
+*.dSYM/
+
+CMakeUserPresets.json
