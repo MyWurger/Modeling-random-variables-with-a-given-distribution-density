@@ -66,6 +66,15 @@ struct PlotSeriesData
     qreal width = 2.0;
     // Стиль линии серии - сплошная.
     Qt::PenStyle penStyle = Qt::SolidLine;
+    // Режим восстановления y под курсором.
+    enum class HoverMode
+    {
+        // Для обычных линий используется линейная интерполяция.
+        Linear,
+        // Для ступенчатых графиков берется последнее значение слева.
+        Step,
+    };
+    HoverMode hoverMode = HoverMode::Linear;
 };
 
 // Предварительное объявление вспомогательного класса интерактивного view.
@@ -143,6 +152,8 @@ private:
         qreal width = 2.0;
         // Стиль линии серии - непрерывная.
         Qt::PenStyle penStyle = Qt::SolidLine;
+        // Правило hover-восстановления значения серии.
+        PlotSeriesData::HoverMode hoverMode = PlotSeriesData::HoverMode::Linear;
         // Признак того, что точки упорядочены по X.
         bool monotonicByX = false;
         // Ссылка на реально отрисовываемую серию Qt Charts.

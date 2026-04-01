@@ -2649,7 +2649,12 @@ void MainWindow::UpdatePlots(const SamplingResult& result)
     // - теоретическую плотность f(x)=2x.
     histogramPlot_->SetSeries(
         {
-            {"Гистограмма выборки", BuildHistogramOutline(result.histogram), QColor("#2563eb"), 2.4, Qt::SolidLine},
+            {"Гистограмма выборки",
+             BuildHistogramOutline(result.histogram),
+             QColor("#2563eb"),
+             2.4,
+             Qt::SolidLine,
+             PlotSeriesData::HoverMode::Step},
             {"Теоретическая плотность  f(x)=2x", BuildDensityCurvePoints(), QColor("#dc2626"), 2.0, Qt::DashLine},
         });
 
@@ -2658,7 +2663,12 @@ void MainWindow::UpdatePlots(const SamplingResult& result)
     // - теоретическую функцию F(x)=x^2.
     cdfPlot_->SetSeries(
         {
-            {"Эмпирическая функция  F(x)", BuildEmpiricalDistributionPoints(result.sortedSamples), QColor("#1d4ed8"), 2.4, Qt::SolidLine},
+            {"Эмпирическая функция  F(x)",
+             BuildEmpiricalDistributionPoints(result.sortedSamples),
+             QColor("#1d4ed8"),
+             2.4,
+             Qt::SolidLine,
+             PlotSeriesData::HoverMode::Step},
             {"Теоретическая функция  F(x)=x²", BuildTheoreticalDistributionPoints(), QColor("#059669"), 2.0, Qt::DashLine},
         });
 

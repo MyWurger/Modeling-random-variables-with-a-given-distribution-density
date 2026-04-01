@@ -301,6 +301,7 @@ QString FormatHoverValue(double value)
 // ----------------------------------------------------------------------------
 std::optional<double> InterpolateSeriesValueAtX(const QVector<QPointF>& points,
                                                 bool monotonicByX,
+                                                PlotSeriesData::HoverMode hoverMode,
                                                 double xValue)
 {
     // Эта функция нужна hover-режиму:
@@ -314,6 +315,53 @@ std::optional<double> InterpolateSeriesValueAtX(const QVector<QPointF>& points,
     if (points.isEmpty() || !std::isfinite(xValue))
     {
         return std::nullopt;
+    }
+
+    // Для ступенчатых серий линейная интерполяция дает визуально неверное
+    // поведение на скачках: маркер как будто "догоняет" новую высоту
+    // и меняет ее с запаздыванием. Поэтому в этом режиме берем последнее
+    // значение серии, определенное в точке x слева.
+    if (hoverMode == PlotSeriesData::HoverMode::Step)
+    {
+        // Для идеально монотонных ступенчатых серий можно быстро взять
+        // последнее значение слева бинарным поиском.
+        if (monotonicByX)
+        {
+            const auto upperIt =
+                std::upper_bound(points.cbegin(), points.cend(), xValue, [](double value, const QPointF& point) {
+                    return value < point.x();
+                });
+
+            if (upperIt == points.cbegin())
+            {
+                return points.front().y();
+            }
+
+            return (upperIt - 1)->y();
+        }
+
+        // Если же серия формально не монотонна по x из-за повторяющихся
+        // границ ступенек или мелких численных шумов, все равно восстанавливаем
+        // корректное ступенчатое значение простым проходом по точкам.
+        constexpr double kStepTolerance = 1.0e-12;
+        double lastY = points.front().y();
+        bool foundPointOnTheLeft = false;
+
+        for (const QPointF& point : points)
+        {
+            if (point.x() <= xValue + kStepTolerance)
+            {
+                lastY = point.y();
+                foundPointOnTheLeft = true;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return foundPointOnTheLeft ? std::optional<double>(lastY)
+                                   : std::optional<double>(points.front().y());
     }
 
     // Есть два принципиально разных случая.
@@ -1002,7 +1050,7 @@ private:
         {
             // Пытаемся определить значение серии в текущем x.
             const std::optional<double> yValue =
-                InterpolateSeriesValueAtX(state.fullPoints, state.monotonicByX, xValue);
+                InterpolateSeriesValueAtX(state.fullPoints, state.monotonicByX, state.hoverMode, xValue);
             // Если для конкретной серии значение восстановить нельзя,
             // просто пропускаем ее в tooltip.
             if (!yValue.has_value())
@@ -1020,11 +1068,18 @@ private:
 
         // Рисуем маленькие цветные маркеры на всех сериях,
         // для которых удалось определить значение в текущем x.
-        painter->setPen(Qt::NoPen);
-        for (const HoverEntry& entry : entries)
+        for (int index = entries.size() - 1; index >= 0; --index)
         {
+            const HoverEntry& entry = entries[index];
+            // Сначала рисуем светлый ореол, чтобы маркер не терялся
+            // на фоне линии другой серии и сетки.
+            painter->setPen(Qt::NoPen);
+            painter->setBrush(QColor(255, 255, 255, 235));
+            painter->drawEllipse(entry.markerViewPoint, 5.8, 5.8);
+
+            // Затем рисуем сам цветной маркер.
             painter->setBrush(QColor(entry.color.red(), entry.color.green(), entry.color.blue(), 235));
-            painter->drawEllipse(entry.markerViewPoint, 4.5, 4.5);
+            painter->drawEllipse(entry.markerViewPoint, 4.2, 4.2);
         }
 
         // Затем рисуем сам tooltip со списком значений.
@@ -1954,6 +2009,7 @@ void PlotChartWidget::SetSeries(const QVector<PlotSeriesData>& series)
         state.color = seriesData.color;
         state.width = seriesData.width;
         state.penStyle = seriesData.penStyle;
+        state.hoverMode = seriesData.hoverMode;
         // Сохраняем, упорядочена ли серия по x,
         // чтобы дальше можно было оптимизировать отрисовку и interpolation.
         state.monotonicByX = IsMonotonicByX(seriesData.points);
